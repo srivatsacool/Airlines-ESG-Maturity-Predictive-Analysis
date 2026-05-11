@@ -1,547 +1,81 @@
 # ✈️ Airlines ESG Maturity Predictive Analysis
 
----
+<p align="center">
+  <img src="assets/hero.png" alt="Airlines ESG Hero Banner" width="100%" />
+</p>
 
-## 📌 Project Overview
+## Overview
 
-This data mining project analyzes ESG (Environmental, Social, Governance) maturity across 127 airline companies using supervised learning techniques. We build predictive models to:
-
-1. **Predict continuous ESG scores** (0-100) using Linear Regression
-2. **Classify airlines as ESG Leaders or Laggards** using Logistic Regression
-3. **Understand key drivers** of ESG performance
-4. **Test statistical hypotheses** about company size and ESG
-
-### Key Results:
-- ✅ **Regression Model:** Explains 78% of ESG score variance (R² = 0.78)
-- ✅ **Classification Model:** 88% accuracy in identifying ESG leaders
-- ✅ **Statistical Finding:** Large-cap airlines have significantly higher ESG scores (p < 0.001)
+A comprehensive **data mining project** analyzing ESG (Environmental, Social, Governance) maturity across **127 airline companies** using supervised learning. The project builds predictive models to forecast continuous ESG scores via Linear Regression and classify airlines as ESG Leaders or Laggards via Logistic Regression — achieving **R² = 0.78** and **88% classification accuracy**.
 
 ---
 
-## 📊 9-SLIDE PRESENTATION STRUCTURE
+## Key Results
 
-### SLIDE 1: Steps for Analysis
-
-**Methodology Overview:**
-
-1. **Data Loading & Exploration** - Load 3 Excel sheets (ENV, Social, Governance) with 61 features
-2. **Data Cleaning & Preprocessing** - Handle missing values, outliers, scaling
-3. **Exploratory Data Analysis** - Distributions, correlations, descriptive statistics
-4. **Hypothesis Testing** - Test if company size affects ESG scores
-5. **Feature Selection** - Identify most important variables (Env, Social, Gov, Mkt Cap)
-6. **Train-Test Split** - 80% training, 20% testing for validation
-7. **Model Building** - Train 2 models: Regression & Classification
-8. **Model Diagnostics** - Evaluate using R², RMSE, Accuracy, ROC-AUC
-9. **Key Findings** - Summary of insights and recommendations
+| Metric | Value |
+|---|---|
+| Regression R² | 0.78 (78% variance explained) |
+| Classification Accuracy | 88% |
+| ROC-AUC | 0.94 (Excellent) |
+| Statistical Finding | Large-cap airlines score 12.8 pts higher (p < 0.001) |
 
 ---
 
-### SLIDE 2: Data Information & Column Descriptions
+## Key Features
 
-#### Dataset Size & Structure
-- **Observations:** 127 airline companies
-- **Features:** 61 variables across three ESG pillars
-- **Target Variable:** ESG Score (0-100)
-
-#### Key Features
-
-| Feature Category | Variables | Description |
-|---|---|---|
-| **Environmental Pillar** | Env Scr, Carbon Emissions, Renewable Energy %, Environmental Disclosure | Company's environmental commitment (emissions, renewables, sustainability initiatives) |
-| **Social Pillar** | Soc Scr, Employee Satisfaction, Safety Records, Social Disclosure | Employee welfare, safety, community relations, social impact |
-| **Governance Pillar** | Gov Scr, Board Independence %, Executive Compensation, Governance Disclosure | Board structure, transparency, executive compensation, regulatory compliance |
-| **Company Info** | Short Name, Ticker, Country, Mkt Cap | Basic company identifiers and market capitalization |
-| **Target** | ESG Scr, ESG Scr Percentile | Overall ESG score (0-100) and percentile ranking |
-
-#### Data Quality
-- **Missing Values:** Initially 15-20% missing in some columns
-- **Data Types:** Mix of numeric (scores, metrics) and categorical (company names)
-- **Outliers:** Some extreme scores in both directions (detected with IQR method)
+- **Dual Model Pipeline** — Linear Regression + Logistic Regression
+- **Hypothesis Testing** — t-test proving company size affects ESG scores
+- **9-Slide Analysis** — Structured presentation-ready output
+- **Feature Selection** — VIF-based multicollinearity reduction
+- **Comprehensive EDA** — Correlation heatmaps, distributions, box plots
 
 ---
 
-### SLIDE 3: Data Cleaning & Preprocessing
+## Technology Stack
 
-#### Step 1: Handle Missing Target Variable
-- Removed rows where ESG Score (target) was missing
-- **Impact:** Reduced from 127 to ~120 airlines with valid targets
-
-#### Step 2: Imputation of Missing Values
-- Used **median imputation** for remaining missing values
-- **Reason:** Median is robust to outliers and maintains distribution
-- **Result:** Zero missing values after imputation
-
-#### Step 3: Outlier Detection & Removal (IQR Method)
-```
-Q1 = 25th percentile
-Q3 = 75th percentile
-IQR = Q3 - Q1
-Lower Bound = Q1 - 1.5 × IQR
-Upper Bound = Q3 + 1.5 × IQR
-
-Remove: Values outside [Lower Bound, Upper Bound]
-```
-
-- **Example:** If Q1=40, Q3=70, IQR=30
-  - Lower = 40 - 45 = -5
-  - Upper = 70 + 45 = 115
-  - Removes extreme scores (if any > 100 or < 0)
-
-#### Step 4: Feature Selection
-Selected 4 key features for modeling:
-1. **Env Scr** (0-100) - Environmental pillar score
-2. **Soc Scr** (0-100) - Social pillar score
-3. **Gov Scr** (0-100) - Governance pillar score
-4. **Mkt Cap** ($M) - Market capitalization for size effect
-
-#### Step 5: Feature Scaling (Standardization)
-Applied **StandardScaler** to all features:
-```
-x_scaled = (x - mean) / std_dev
-```
-
-**Why?** Ensures all features have:
-- Mean ≈ 0
-- Standard Deviation ≈ 1
-- Equal contribution to model
+| Technology | Purpose |
+|---|---|
+| Python 3 | Core language |
+| Scikit-learn | ML models and evaluation |
+| Pandas / NumPy | Data manipulation |
+| Matplotlib / Seaborn | Data visualization |
+| Jupyter Notebook | Interactive analysis |
+| StatsModels | Statistical testing |
 
 ---
 
-### SLIDE 4: Exploratory Data Analysis (EDA)
+## Methodology
 
-#### Descriptive Statistics
-
-| Variable | Count | Mean | Std | Min | 25% | 50% | 75% | Max |
-|---|---|---|---|---|---|---|---|---|
-| Env Scr | 120 | 48.5 | 16.2 | 15.3 | 36.8 | 50.2 | 61.4 | 78.9 |
-| Soc Scr | 120 | 52.1 | 14.8 | 18.5 | 42.3 | 54.1 | 63.2 | 82.1 |
-| Gov Scr | 120 | 55.3 | 13.5 | 22.1 | 47.6 | 56.8 | 65.1 | 79.4 |
-| Mkt Cap | 120 | 8,250 | 15,420 | 120 | 1,200 | 3,500 | 8,100 | 95,000 |
-| **ESG Scr** | 120 | **51.8** | **13.2** | **23.4** | **42.6** | **52.1** | **61.5** | **86.3** |
-
-#### Key Distributions
-- **ESG Scores:** Approximately normal distribution (bell-shaped)
-- **Environmental:** Slightly left-skewed (lower performers)
-- **Social:** More symmetric distribution
-- **Governance:** Slightly right-skewed (more leaders)
-- **Market Cap:** Highly right-skewed (log-normal distribution)
-
-#### Correlation Analysis
-
-Correlation with ESG Score:
-- **Gov Scr:** r = +0.82 (Very Strong Positive) ⭐
-- **Env Scr:** r = +0.79 (Very Strong Positive) ⭐
-- **Soc Scr:** r = +0.75 (Strong Positive) ⭐
-- **Mkt Cap:** r = +0.35 (Moderate Positive)
-
-**Interpretation:** All three pillars are STRONGLY correlated with overall ESG score, validating the multi-pillar approach.
-
----
-
-### SLIDE 4B: Hypothesis Testing
-
-#### Research Question
-**Does company size affect ESG performance?**
-
-#### Hypothesis Formulation
-- **H₀ (Null):** Large-cap and small-cap airlines have equal mean ESG scores
-- **H₁ (Alternative):** Large-cap airlines have higher ESG scores than small-cap airlines
-
-#### Statistical Test
-- **Test Type:** Independent Samples t-test (Welch's test for unequal variances)
-- **Significance Level:** α = 0.05 (5% significance)
-- **Division Point:** Median Market Cap
-
-#### Results
-
-| Group | N | Mean ESG | Std Dev | Range |
-|---|---|---|---|---|
-| **Large-cap** | 60 | **58.2** | 11.5 | [28-85] |
-| **Small-cap** | 60 | **45.4** | 12.1 | [23-79] |
-| **Difference** | - | **+12.8** | - | - |
-
-#### Statistical Outputs
-- **t-statistic:** 5.43
-- **p-value:** 0.0000003 (highly significant!)
-- **Cohen's d:** 1.04 (large effect size)
-
-#### Decision & Interpretation
-✅ **REJECT H₀** (p-value < 0.05)
-
-**Conclusion:** There IS a statistically significant and LARGE difference in ESG scores between large-cap and small-cap airlines. Large-cap airlines have **significantly HIGHER ESG scores** (~13 points higher).
-
-**Why?**
-- Larger companies have more resources for ESG initiatives
-- Better reporting infrastructure and disclosure
-- More stakeholder pressure and scrutiny
-- Greater access to sustainable technologies
-
----
-
-### SLIDE 5: EDA Insights (Bullet Points with Graphs)
-
-#### Key Insights
-1. **Governance is the Strength** (r=0.82)
-   - Airlines show strongest performance in governance (avg 55.3)
-   - Independent boards, clear policies are in place
-
-2. **Environmental is the Challenge** (r=0.79, lowest mean)
-   - Environmental scores lowest among pillars (avg 48.5)
-   - Opportunity for improvement in emissions reduction
-
-3. **Social Performance is Balanced** (r=0.75)
-   - Between environmental and governance
-   - Employee satisfaction and safety metrics improving
-
-4. **Significant Size Effect**
-   - Large-cap airlines: 12.8 points higher ESG
-   - Highest-scoring airlines: $50B+ market cap
-   - Smallest airlines: $100M-$500M cap struggle with ESG
-
-5. **Strong Inter-Pillar Correlation**
-   - Environmental-Governance: r=0.68 (strong)
-   - Social-Governance: r=0.71 (strong)
-   - Suggests integrated ESG strategies
-
-6. **ESG Distribution**
-   - Approximately normal (mean=51.8, std=13.2)
-   - Few very high performers (>80) and low performers (<25)
-   - Most airlines cluster in 40-65 range (middle performers)
-
-#### Visualizations Include:
-- Histograms of ESG and pillar scores
-- Scatter plots showing linear relationships
-- Correlation heatmap
-- Box plots comparing large vs small cap
-
----
-
-### SLIDE 6: Feature Selection & Train-Test Split
-
-#### Feature Selection Results
-
-**Correlation-Based Ranking:**
-1. Gov Scr: |r| = 0.82 ✅ (CRITICAL)
-2. Env Scr: |r| = 0.79 ✅ (CRITICAL)
-3. Soc Scr: |r| = 0.75 ✅ (CRITICAL)
-4. Mkt Cap: |r| = 0.35 ✅ (IMPORTANT)
-
-**F-Statistics (Univariate Tests):**
-
-| Feature | F-Score | P-value | Significance |
-|---|---|---|---|
-| Env Scr | 42.3 | <0.001 | ✅ Highly Sig. |
-| Soc Scr | 35.8 | <0.001 | ✅ Highly Sig. |
-| Gov Scr | 51.2 | <0.001 | ✅ Highly Sig. |
-| Mkt Cap | 7.4 | 0.008 | ✅ Significant |
-
-**Decision:** All 4 features selected (all individually significant, p < 0.05)
-
-#### Train-Test Split
-
-**Configuration:**
-- **Training Set:** 80% of data (96 airlines)
-- **Testing Set:** 20% of data (24 airlines)
-- **Random State:** 42 (for reproducibility)
-- **Stratification:** None (regression task)
-
-**Data Distribution:**
-```
-Training:
-  Mean ESG: 51.6 (vs overall 51.8) ✓ Representative
-  Std Dev:  13.1 (vs overall 13.2) ✓ Good match
-  Range:    [25, 85]
-
-Testing:
-  Mean ESG: 52.3 (vs overall 51.8) ✓ Representative
-  Std Dev:  13.4 (vs overall 13.2) ✓ Good match
-  Range:    [28, 84]
+```text
+127 Airlines (3 Excel sheets: ENV, Social, Governance)
+        ↓
+Data Cleaning (IQR outlier removal, median imputation)
+        ↓
+EDA + Hypothesis Testing (t-test, p < 0.001)
+        ↓
+Feature Selection (VIF-based)
+        ↓
+Linear Regression → Continuous ESG Score
+Logistic Regression → Leader / Laggard Classification
+        ↓
+Model Diagnostics (R², RMSE, ROC-AUC, Confusion Matrix)
 ```
 
 ---
 
-### SLIDE 7: Model Building & Training
+## Installation & Setup
 
-#### MODEL 1: LINEAR REGRESSION
-
-**Purpose:** Predict continuous ESG scores (0-100)
-
-**Mathematical Form:**
-```
-ESG_Score = β₀ + β₁×Env_Scr + β₂×Soc_Scr + β₃×Gov_Scr + β₄×Mkt_Cap + ε
-```
-
-**Algorithm:** Ordinary Least Squares (OLS)
-- Minimizes sum of squared residuals
-- Linear combination of features
-- Best for continuous target variables
-
-**Coefficients (standardized features):**
-```
-Intercept (β₀):    51.50
-Env Scr (β₁):     +0.320  (strong positive effect)
-Soc Scr (β₂):     +0.280  (moderate positive)
-Gov Scr (β₃):     +0.380  (strongest positive)
-Mkt Cap (β₄):     +0.045  (weak positive)
-```
-
-**Interpretation:**
-- 1 unit increase in standardized Gov Score → +0.38 ESG points (largest impact)
-- 1 unit increase in standardized Env Score → +0.32 ESG points
-- 1 unit increase in standardized Social Score → +0.28 ESG points
-- Market cap has smallest effect after standardization
-
----
-
-#### MODEL 2: LOGISTIC REGRESSION
-
-**Purpose:** Classify airlines as ESG Leader or Laggard (binary classification)
-
-**Classification Rule:**
-```
-P(Leader) = 1 / (1 + e^(-z))
-where z = β₀ + β₁×Env + β₂×Soc + β₃×Gov + β₄×MktCap
-
-Decision: If P(Leader) > 0.5 → Predict "Leader"
-          If P(Leader) ≤ 0.5 → Predict "Laggard"
-```
-
-**Class Definition:**
-- **ESG Leader:** ESG Score > Median (50th percentile = 52.1)
-- **ESG Laggard:** ESG Score ≤ Median
-
-**Class Distribution (Training Set):**
-- ESG Laggards: 48 airlines (50%)
-- ESG Leaders: 48 airlines (50%)
-- **Status:** Perfectly balanced classes ✓
-
-**Coefficients:**
-```
-Intercept: 0.015 (neutral baseline)
-Env Scr:  +0.42
-Soc Scr:  +0.35
-Gov Scr:  +0.48  (strongest predictor)
-Mkt Cap:  +0.08
-```
-
-**Output:** Probability (0-1) that airline is an ESG Leader
-
----
-
-### SLIDE 8: Model Diagnostics & Evaluation
-
-#### REGRESSION MODEL PERFORMANCE
-
-**Training Set:**
-- R² Score: 0.79 (79% variance explained)
-- RMSE: 5.2 points
-- MAE: 4.1 points
-
-**Testing Set (True Performance):**
-- **R² Score: 0.78** (78% variance explained) ⭐
-- **RMSE: 5.4** (±5.4 points average error)
-- **MAE: 4.2** (±4.2 points average error)
-
-**Interpretation:**
-- ✅ Excellent fit - explains 78% of ESG score variation
-- ✅ No overfitting - train/test R² differ by only 1%
-- ✅ Average prediction error of ±4-5 points (good for 0-100 scale)
-- ✅ Model generalizes well to unseen data
-
-**Residual Analysis:**
-- Distribution: Approximately normal (good)
-- Mean: ~0 (unbiased predictions)
-- Spread: Constant across predictions (homoscedastic)
-
----
-
-#### CLASSIFICATION MODEL PERFORMANCE
-
-**Training Set:**
-- Accuracy: 90%
-
-**Testing Set (True Performance):**
-
-| Metric | Value | Interpretation |
-|---|---|---|
-| **Accuracy** | **88%** ⭐ | Correctly classifies 88/100 airlines |
-| **Precision** | 0.87 | Of predicted leaders, 87% correct |
-| **Recall** | 0.89 | Of actual leaders, model finds 89% |
-| **F1-Score** | 0.88 | Balanced measure (harmonic mean) |
-| **ROC-AUC** | 0.94 ⭐ | Excellent discrimination |
-
-**Confusion Matrix:**
-```
-                Predicted
-              Laggard  Leader
-Actual Laggard    11       1      (92% correct)
-       Leader      1      11      (92% correct)
-```
-
-**ROC-AUC Interpretation:**
-- Score of 0.94 is **EXCELLENT** (>0.9)
-- Model correctly ranks leaders >95% of the time
-- Much better than random guessing (0.5)
-
-**Classification Performance Summary:**
-- ✅ High accuracy (88%) - reliable predictions
-- ✅ Balanced precision/recall (no major bias)
-- ✅ ROC-AUC of 0.94 shows excellent discrimination
-- ✅ Strong on both leader and laggard identification
-
----
-
-### SLIDE 9: Key Findings & Summary
-
-#### FINDING #1: Governance is the ESG Driver
-- **Gov Score correlation with ESG:** r = +0.82 (strongest)
-- **Action:** Airlines focusing on board independence, transparency, ethics achieve higher overall ESG
-- **Priority:** Governance improvements yield quickest ESG gains
-
-#### FINDING #2: Company Size Effect is Real & Significant
-- **Large-cap Mean ESG:** 58.2
-- **Small-cap Mean ESG:** 45.4
-- **Difference:** 12.8 points (p < 0.001, highly significant)
-- **Cohen's d:** 1.04 (large effect size)
-- **Reason:** Larger airlines have resources for comprehensive ESG programs
-
-#### FINDING #3: Regression Model is Highly Predictive
-- **R² = 0.78:** Model explains 78% of ESG score variation
-- **RMSE = 5.4:** Predictions accurate to ±5-6 points
-- **Application:** Can predict ESG scores for new airlines with good accuracy
-- **Limitation:** 22% unexplained variance due to company-specific factors
-
-#### FINDING #4: Classification Model is Highly Accurate
-- **Accuracy = 88%:** Correctly identifies ESG leaders/laggards in 88% of cases
-- **ROC-AUC = 0.94:** Excellent ranking ability
-- **Application:** Can reliably screen for ESG leaders for investment portfolios
-- **Use Case:** ESG fund managers can use model for stock selection
-
-#### FINDING #5: Multi-Pillar Strategy is Essential
-- **Environmental:** r=0.79 (strong)
-- **Social:** r=0.75 (strong)
-- **Governance:** r=0.82 (very strong)
-- **Insight:** Companies need balanced improvement across all three pillars
-- **Not a silver bullet:** Focusing only on one pillar insufficient
-
----
-
-## 🎯 Business Recommendations
-
-### For ESG Investors
-1. Use the 88% accurate classification model for ESG fund screening
-2. Prioritize large-cap airlines (significantly better ESG scores)
-3. Look for high governance scores as leading indicator
-4. Diversify across environmental and social improvements
-
-### For Airline Management
-1. **Immediate (Governance):** Strengthen board independence and reporting
-2. **Short-term (Environmental):** Launch carbon reduction initiatives
-3. **Medium-term (Social):** Enhance employee welfare programs
-4. **Long-term:** Integrated ESG strategy across all three pillars
-
-### For Sustainability Teams
-1. Set governance benchmarks (55+ score target)
-2. Develop environmental disclosure plans
-3. Measure social impact quarterly
-4. Report transparently (improves scores)
-
----
-
-## 📈 Model Performance Summary
-
-### Regression Model (Continuous Prediction)
-```
-Model: Linear Regression (OLS)
-Purpose: Predict ESG Score (0-100)
-Performance (Test Set):
-  ├─ R²: 0.78 (78% variance explained)
-  ├─ RMSE: 5.4 points
-  ├─ MAE: 4.2 points
-  └─ Status: ✅ EXCELLENT
-```
-
-### Classification Model (Binary Classification)
-```
-Model: Logistic Regression
-Purpose: Classify as ESG Leader/Laggard
-Performance (Test Set):
-  ├─ Accuracy: 88% (88/100 correct)
-  ├─ Precision: 0.87 (leaders identified correctly)
-  ├─ Recall: 0.89 (finds 89% of actual leaders)
-  ├─ ROC-AUC: 0.94 (excellent discrimination)
-  └─ Status: ✅ EXCELLENT
+```bash
+git clone https://github.com/srivatsacool/Airlines-ESG-Maturity-Predictive-Analysis.git
+cd Airlines-ESG-Maturity-Predictive-Analysis
+pip install -r requirements.txt
+jupyter notebook
 ```
 
 ---
 
-## ⚠️ Limitations
+## Author
 
-1. **Sample Size:** 127 airlines may not represent all global carriers
-2. **Time Period:** Snapshot analysis (no time-series trends)
-3. **Industry Focus:** Airlines only (not generalizable to other sectors)
-4. **Linearity Assumption:** Assumes linear relationships (may be non-linear)
-5. **Market Cap Limitation:** Does not account for business cycles
-6. **Missing Context:** Does not include specific initiatives or strategies
+**Srivatsa Gorti**
 
 ---
-
-## 🚀 Future Improvements
-
-1. **Ensemble Methods:** Random Forest, Gradient Boosting for non-linear patterns
-2. **Time-Series Analysis:** Track ESG evolution over 5-10 years
-3. **Sector Expansion:** Include multiple industries for broader insights
-4. **Feature Engineering:** Add operational metrics (fuel efficiency, fleet age)
-5. **Regional Analysis:** Compare ESG standards by geographic region
-6. **Causal Analysis:** Determine which changes drive ESG improvements
-
----
-
-## 📊 Project Evaluation (60 Marks Breakdown)
-
-| Component | Marks | Status | Evidence |
-|---|---|---|---|
-| Data Understanding | 10 | ✅ Complete | Dataset overview, 61 features, 127 airlines |
-| Data Cleaning | 8 | ✅ Complete | Outlier removal (IQR), imputation, scaling |
-| EDA | 10 | ✅ Complete | Stats, distributions, 9 visualizations |
-| Hypothesis Testing | 8 | ✅ Complete | H₀/H₁, t-test, p-value, decision |
-| Feature Selection | 6 | ✅ Complete | Correlation, F-stats, significance testing |
-| Model Building | 10 | ✅ Complete | 2 models, training complete |
-| Model Evaluation | 8 | ✅ Complete | R², RMSE, Accuracy, ROC-AUC, confusion matrix |
-| Presentation | 4 | ✅ Complete | 9-slide structure, clear organization |
-| **TOTAL** | **64** | ✅ | **EXCEEDS 60 MARKS** |
-
----
-
-## 📌 Quick Reference
-
-### Key Numbers
-- **Dataset:** 127 airlines → 120 clean → 96 train + 24 test
-- **Features:** 4 (Env, Social, Gov, MktCap)
-- **Regression R²:** 0.78
-- **Classification Accuracy:** 88%
-- **ROC-AUC:** 0.94
-- **ESG Mean:** 51.8 ± 13.2
-- **Large-cap ESG:** 58.2 (12.8 points higher, p < 0.001)
-
-### Key Formulas
-```
-ESG_Prediction = 51.50 + 0.32×Env + 0.28×Soc + 0.38×Gov + 0.045×MktCap
-P(Leader) = 1 / (1 + e^(-(β₀ + β₁×Env + β₂×Soc + β₃×Gov + β₄×MktCap)))
-```
-
----
-
-## 🎓 Conclusion
-
-This comprehensive data mining analysis successfully:
-✅ Identified key ESG drivers (Governance strongest)
-✅ Built accurate predictive models (R²=0.78, Accuracy=88%)
-✅ Tested significant hypotheses (large-cap effect proven)
-✅ Provided actionable insights for stakeholders
-✅ Created interactive tools for predictions
-
-**The models are ready for deployment in ESG investment screening and airline sustainability assessment.**
-
----
-
